@@ -95,6 +95,11 @@ function createWindow() {
     setTimeout(() => {
       const url = `fivem://connect/${serverAddress}`;
       spawn('explorer.exe', [url], { detached: true, stdio: 'ignore', shell: false }).unref();
+      
+      // Ferme automatiquement le launcher 3 secondes apres avoir envoye la requete a FiveM
+      setTimeout(() => {
+        app.quit();
+      }, 3000);
     }, 200);
   });
 
