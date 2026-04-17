@@ -161,6 +161,31 @@ function createWindow() {
       return true;
     }
   });
+  ipcMain.handle('update-launcher', async (event, downloadUrl) => {
+    try {
+      // Trouver le chemin de l'executable d'origine (sur le bureau) via les arguments du Loader C#
+      const originExe = process.argv.length > 1 ? process.argv[process.argv.length - 1] : '';
+      if (!originExe.toLowerCase().endsWith('.exe')) return false;
+
+      // Telecharger la nouvelle version
+      const response = await fetch(downloadUrl);
+      if (!response.ok) return false;
+      
+      const buffer = await response.arrayBuffer();
+      
+      // Ecraser l'ancien fichier sur le bureau (possible car le loader C# est deja ferme)
+      fs.writeFileSync(originExe, Buffer.from(buffer));
+      
+      // Relancer silencieusement
+      spawn(originExe, [], { detached: true, stdio: 'ignore' }).unref();
+      app.quit();
+      return true;
+    } catch (err) {
+      console.error("Erreur de mise à jour: ", err);
+      return false;
+    }
+  });
+
 }
 
 app.whenReady().then(createWindow);

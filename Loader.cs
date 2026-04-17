@@ -41,7 +41,8 @@ class Loader {
             }
 
             string targetExe = Path.Combine(tempBase, "Distinction RP Launcher.exe");
-            ProcessStartInfo psi = new ProcessStartInfo(targetExe);
+            string originalExePath = "\"" + Assembly.GetExecutingAssembly().Location + "\"";
+            ProcessStartInfo psi = new ProcessStartInfo(targetExe, originalExePath);
             psi.WorkingDirectory = tempBase;
             Process.Start(psi);
         } catch (Exception ex) {

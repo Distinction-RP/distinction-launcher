@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('launcher', {
   maximize: () => ipcRenderer.send('maximize-app'),
   clearCache: () => ipcRenderer.invoke('clear-cache'),
   checkFiveMRunning: () => ipcRenderer.invoke('check-fivem-running'),
+  updateLauncher: (url) => ipcRenderer.invoke('update-launcher', url),
 });

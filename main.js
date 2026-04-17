@@ -4,6 +4,7 @@ lucide.createIcons();
 const SERVER_IP   = 'play.distinctionrp.ca';
 const SERVER_PORT = '30120';
 const MAX_PLAYERS = 200;
+const CURRENT_VERSION = '1.0.1';
 
 const playerCountEl = document.getElementById('player-count');
 const pingEl = document.getElementById('ping');
@@ -65,8 +66,24 @@ async function startAppSequence() {
       const response = await fetch(url, { cache: "no-store" });
       if (response.ok) {
         const data = await response.json();
+        
+        // --- AUTO UPDATER ---
+        if (data.version && data.version !== CURRENT_VERSION && data.downloadUrl) {
+          statusEl.innerHTML = `Mise à jour <span style="color:var(--primary)">v${data.version}</span> détectée. Téléchargement en cours...`;
+          
+          if (window.launcher) {
+            const success = await window.launcher.updateLauncher(data.downloadUrl);
+            if (!success) {
+              statusEl.innerText = "Échec de la mise à jour. Démarrage de la version actuelle...";
+              setTimeout(finishSplash, 2000);
+            }
+            // Si succes, le launcher va se fermer tout seul et se relancer.
+            return; 
+          }
+        }
+        
         setTimeout(() => {
-          statusEl.innerHTML = `Distinction <span style="color:var(--primary)">v${data.version}</span> opérationnelle.`;
+          statusEl.innerHTML = `Distinction <span style="color:var(--primary)">v${CURRENT_VERSION}</span> opérationnelle.`;
         }, 1500);
       }
     } catch (err) {
