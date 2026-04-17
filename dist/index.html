@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon Serveur Launcher</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" crossorigin src="./assets/index-BKkHVu7w.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-By1tVIDs.css">
+  </head>
+  <body>
+
+    <div class="launcher-container">
+      
+      <!-- Top nav/header -->
+      <header class="header">
+        <div class="logo-area">
+          <img src="./logo.png" alt="Distinction RP Logo" class="server-logo-img" />
+          <h1 class="server-title">DISTINCTION RP</h1>
+        </div>
+        <div class="header-actions">
+          <div class="nav-links">
+            <a href="#" class="active" id="nav-home">Accueil</a>
+            <a href="#" id="nav-reglement">Règlement</a>
+          </div>
+          <button class="icon-btn minimize-btn" title="Réduire">
+            <i data-lucide="minus"></i>
+          </button>
+          <button class="icon-btn maximize-btn" title="Plein écran">
+            <i data-lucide="maximize"></i>
+          </button>
+          <button class="icon-btn close-btn" title="Fermer">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Splash Screen (Mise à jour) -->
+      <div id="splash-view" class="view">
+        <div class="splash-content">
+          <img src="./logo.png" alt="Logo" class="splash-logo" />
+          <h2 class="splash-title">DISTINCTION RP</h2>
+          <div class="loader-container">
+            <div class="loader-bar"></div>
+          </div>
+          <p id="splash-status">Vérification des mises à jour... <span id="timer">5s</span></p>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <main class="content hidden">
+        <!-- Home View -->
+        <div id="home-view" class="view">
+          <div class="news-section">
+            <h2>Mise à jour 2.4 - Nouveaux Braquages</h2>
+            <p>
+              Bienvenue sur la toute dernière version de la ville ! Profitez des nouveaux véhicules, 
+              d'une économie repensée et des nouveaux scripts illégaux. Rejoignez le Discord pour 
+              les notes de patch complètes.
+            </p>
+            <div class="socials">
+              <button class="social-btn discord">
+                <i data-lucide="message-square"></i> Rejoindre notre Discord
+              </button>
+            </div>
+          </div>
+
+          <div class="play-panel">
+            <div class="server-status">
+              <div class="status-badge">
+                <span class="pulse-dot"></span>
+                <span class="status-text">SERVEUR EN LIGNE</span>
+              </div>
+              <div class="player-counter">
+                <i data-lucide="users"></i>
+                <span id="player-count">0 / 128</span>
+              </div>
+            </div>
+
+            <div class="action-zone">
+              <a href="#" id="play-button" class="play-btn">
+                <div class="btn-content">
+                  <i data-lucide="play"></i>
+                  <span>LANCER LE JEU</span>
+                </div>
+                <div class="btn-subtext">play.distinctionrp.ca</div>
+              </a>
+              <div id="connection-status" class="connection-status hidden">Patching & Connexion...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reglement View (WebView) -->
+        <div id="reglement-view" class="view hidden">
+          <div class="webview-container">
+            <webview id="reglement-webview" src="https://distinction-rp.gitbook.io/distinction-rp-docs" style="width:100%; height:100%"></webview>
+          </div>
+        </div>
+      </main>
+
+    </div>
+  </body>
+</html>

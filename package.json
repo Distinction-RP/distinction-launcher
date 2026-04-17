@@ -1,0 +1,35 @@
+{
+  "name": "fivem-launcher",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:build": "vite build && electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^41.2.0",
+    "electron-builder": "^26.8.1",
+    "vite": "^8.0.4"
+  },
+  "main": "electron.cjs",
+  "build": {
+    "appId": "com.distinctionrp.launcher",
+    "productName": "Distinction RP Launcher",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": {
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
+      },
+      "compression": "store",
+      "forceCodeSigning": false
+    }
+  }
+}

@@ -1,0 +1,8 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('launcher', {
+  connect: (url) => ipcRenderer.send('launch-fivem', url),
+  close: () => ipcRenderer.send('close-app'),
+  minimize: () => ipcRenderer.send('minimize-app'),
+  maximize: () => ipcRenderer.send('maximize-app'),
+});
