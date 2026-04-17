@@ -58,7 +58,12 @@ async function startAppSequence() {
   header.classList.add('hidden');
   const statusEl = document.getElementById('splash-status');
   
-  let timeLeft = 5;
+  // Étape 1 : Initialisation
+  statusEl.innerText = "Initialisation des composants...";
+
+  let timeLeft = 7; // On passe à 7 secondes
+  if (timerEl) timerEl.innerText = `${timeLeft}s`;
+
   const timer = setInterval(() => {
     timeLeft--;
     if (timerEl) timerEl.innerText = `${timeLeft}s`;
@@ -68,18 +73,33 @@ async function startAppSequence() {
     }
   }, 1000);
 
-  // Tentative de vérification RÉELLE sur GitHub
-  try {
-    const response = await fetch('https://raw.githubusercontent.com/Distinction-RP/distinction-launcher/main/version.json');
-    if (response.ok) {
-      const data = await response.json();
-      statusEl.innerHTML = `Version <span style="color:var(--primary)">v${data.version}</span> détectée. Système à jour !`;
-    } else {
-      statusEl.innerText = "Serveur de mise à jour injoignable.";
+  // Étape 2 : Connexion (après 2s)
+  setTimeout(() => {
+    statusEl.innerText = "Vérification de la version en ligne...";
+  }, 2000);
+
+  // Étape 3 : Vérification Git (après 4s)
+  setTimeout(async () => {
+    statusEl.innerText = "Analyse de l'intégrité des fichiers...";
+    
+    try {
+      const cacheBuster = Date.now();
+      const url = `https://raw.githubusercontent.com/Distinction-RP/distinction-launcher/main/version.json?t=${cacheBuster}`;
+      const response = await fetch(url, { cache: "no-store" });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Étape Finale : Affichage du résultat (après 5.5s)
+        setTimeout(() => {
+          statusEl.innerHTML = `Version <span style="color:var(--primary)">v${data.version}</span> détectée. Système à jour !`;
+        }, 1500);
+      } else {
+        statusEl.innerText = "Serveur distant injoignable. Lancement local...";
+      }
+    } catch (err) {
+      statusEl.innerText = "Mode hors-ligne : Version locale active.";
     }
-  } catch (err) {
-    statusEl.innerText = "Mode hors-ligne ou erreur réseau.";
-  }
+  }, 4000);
 }
 
 function finishSplash() {
