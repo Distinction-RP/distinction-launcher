@@ -1,35 +1,23 @@
 // Initialize Lucide icons
 lucide.createIcons();
 
-// --- Configuration ---
 const SERVER_IP   = 'play.distinctionrp.ca';
 const SERVER_PORT = '30120';
 const MAX_PLAYERS = 200;
 
-// DOM Elements
 const playerCountEl = document.getElementById('player-count');
 const pingEl = document.getElementById('ping');
 const playBtn = document.getElementById('play-button');
 const connectionStatus = document.getElementById('connection-status');
 
-// Function to fetch server status from FiveM API
 async function fetchServerStatus() {
   try {
-    const start = performance.now();
-    const response = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/dynamic.json`, {
-      cache: "no-store",
-    });
-    const end = performance.now();
-    const ping = Math.round(end - start);
-    pingEl.innerText = `${ping} ms`;
-
+    const response = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/dynamic.json`, { cache: "no-store" });
     if (response.ok) {
       const data = await response.json();
-      const currentPlayers = data.clients || 0;
-      const svMaxclients = data.sv_maxclients || MAX_PLAYERS;
-      playerCountEl.innerText = `${currentPlayers} / ${svMaxclients}`;
+      playerCountEl.innerText = `${data.clients || 0} / ${data.sv_maxclients || MAX_PLAYERS}`;
     } else {
-      throw new Error("Cannot read server data");
+      simulateServerStatus();
     }
   } catch (err) {
     simulateServerStatus();
@@ -37,13 +25,9 @@ async function fetchServerStatus() {
 }
 
 function simulateServerStatus() {
-  const mockPlayers = Math.floor(Math.random() * 10) + 30;
-  const mockPing = Math.floor(Math.random() * 5) + 8;
-  playerCountEl.innerText = `${mockPlayers} / 128`;
-  pingEl.innerText = `${mockPing} ms`;
+  playerCountEl.innerText = `${Math.floor(Math.random() * 10) + 30} / 512`;
 }
 
-// View Switching Logic
 const navHome = document.getElementById('nav-home');
 const navReglement = document.getElementById('nav-reglement');
 const splashView = document.getElementById('splash-view');
@@ -52,16 +36,14 @@ const homeView = document.getElementById('home-view');
 const reglementView = document.getElementById('reglement-view');
 const header = document.querySelector('.header');
 const timerEl = document.getElementById('timer');
+const webview = document.getElementById('reglement-webview');
 
-// Sequence de démarrage (Splash -> Home)
 async function startAppSequence() {
   header.classList.add('hidden');
   const statusEl = document.getElementById('splash-status');
-  
-  // Étape 1 : Initialisation
-  statusEl.innerText = "Initialisation des composants...";
+  statusEl.innerText = "Initialisation du système...";
 
-  let timeLeft = 7; // On passe à 7 secondes
+  let timeLeft = 7;
   if (timerEl) timerEl.innerText = `${timeLeft}s`;
 
   const timer = setInterval(() => {
@@ -73,31 +55,22 @@ async function startAppSequence() {
     }
   }, 1000);
 
-  // Étape 2 : Connexion (après 2s)
-  setTimeout(() => {
-    statusEl.innerText = "Vérification de la version en ligne...";
-  }, 2000);
+  setTimeout(() => { statusEl.innerText = "Synchronisation de la version..."; }, 2000);
 
-  // Étape 3 : Vérification Git (après 4s)
   setTimeout(async () => {
-    statusEl.innerText = "Analyse de l'intégrité des fichiers...";
-    
+    statusEl.innerText = "Optimisation de l'intégrité...";
     try {
       const cacheBuster = Date.now();
       const url = `https://raw.githubusercontent.com/Distinction-RP/distinction-launcher/main/version.json?t=${cacheBuster}`;
       const response = await fetch(url, { cache: "no-store" });
-      
       if (response.ok) {
         const data = await response.json();
-        // Étape Finale : Affichage du résultat (après 5.5s)
         setTimeout(() => {
-          statusEl.innerHTML = `Version <span style="color:var(--primary)">v${data.version}</span> détectée. Système à jour !`;
+          statusEl.innerHTML = `Distinction <span style="color:var(--primary)">v${data.version}</span> opérationnelle.`;
         }, 1500);
-      } else {
-        statusEl.innerText = "Serveur distant injoignable. Lancement local...";
       }
     } catch (err) {
-      statusEl.innerText = "Mode hors-ligne : Version locale active.";
+      statusEl.innerText = "Mode local actif : Connexion sécurisée.";
     }
   }, 4000);
 }
@@ -123,58 +96,112 @@ function showView(viewName) {
   }
 }
 
-// Initial Launch
 startAppSequence();
 
-navHome.addEventListener('click', (e) => {
-  e.preventDefault();
-  showView('home');
-});
+navHome.addEventListener('click', (e) => { e.preventDefault(); showView('home'); });
+navReglement.addEventListener('click', (e) => { e.preventDefault(); showView('reglement'); });
 
-navReglement.addEventListener('click', (e) => {
-  e.preventDefault();
-  showView('reglement');
-});
-
-// Play Button Listener
 playBtn.addEventListener('click', (e) => {
   e.preventDefault();
-
-  // Update UI
-  connectionStatus.textContent = 'Configuration appliquée — Connexion en cours...';
-  connectionStatus.classList.remove('hidden');
+  
+  const span = playBtn.querySelector('span');
+  const oldText = span.textContent;
+  
+  span.textContent = 'LANCEMENT...';
   playBtn.style.opacity = '0.7';
   playBtn.style.pointerEvents = 'none';
 
-  // Lancer FiveM via l'IPC (le main process gère le patch du CitizenFX.ini)
-  const serverAddress = `${SERVER_IP}:${SERVER_PORT}`;
   if (window.launcher) {
-    window.launcher.connect(serverAddress);
+    window.launcher.connect(`${SERVER_IP}:${SERVER_PORT}`);
   }
 
-  // Reset bouton après 5 sec
   setTimeout(() => {
-    connectionStatus.classList.add('hidden');
+    span.textContent = oldText;
     playBtn.style.opacity = '1';
     playBtn.style.pointerEvents = 'auto';
   }, 5000);
 });
 
-// Windows Controls
-document.querySelector('.close-btn').addEventListener('click', () => {
-  if (window.launcher) window.launcher.close();
+document.querySelector('.close-btn').addEventListener('click', () => { if (window.launcher) window.launcher.close(); });
+document.querySelector('.minimize-btn').addEventListener('click', () => { if (window.launcher) window.launcher.minimize(); });
+
+// --- SYSTEME DE MODAL CUSTOM ---
+const modal = document.getElementById('custom-modal');
+const modalText = document.getElementById('modal-text');
+const modalLoader = document.getElementById('modal-loader');
+const modalConfirm = document.getElementById('modal-confirm');
+const modalCancel = document.getElementById('modal-cancel');
+const modalFooter = document.querySelector('.modal-footer');
+
+let modalCallback = null;
+
+function showCustomModal(text, isAlert = false) {
+  modalText.textContent = text;
+  modalLoader.classList.add('hidden');
+  modalFooter.classList.remove('hidden');
+  modal.classList.remove('hidden');
+  
+  if (isAlert) {
+    modalCancel.classList.add('hidden');
+    modalConfirm.textContent = 'OK';
+  } else {
+    modalCancel.classList.remove('hidden');
+    modalConfirm.textContent = 'CONFIRMER';
+  }
+
+  return new Promise((resolve) => {
+    modalCallback = resolve;
+  });
+}
+
+modalConfirm.addEventListener('click', () => {
+  if (modalConfirm.textContent === 'CONFIRMER') {
+    // Mode confirmation -> On passe en chargement
+    modalText.textContent = 'NETTOYAGE EN COURS...';
+    modalFooter.classList.add('hidden');
+    modalLoader.classList.remove('hidden');
+    if (modalCallback) modalCallback(true);
+  } else {
+    // Mode Alerte (OK) -> On ferme
+    modal.classList.add('hidden');
+    if (modalCallback) modalCallback(true);
+  }
 });
 
-document.querySelector('.minimize-btn').addEventListener('click', () => {
-  if (window.launcher) window.launcher.minimize();
+modalCancel.addEventListener('click', () => {
+  modal.classList.add('hidden');
+  if (modalCallback) modalCallback(false);
 });
 
-document.querySelector('.maximize-btn').addEventListener('click', () => {
-  if (window.launcher) window.launcher.maximize();
-});
+// Vider le cache FiveM
+const clearCacheBtn = document.getElementById('clear-cache-home');
 
-// Initial Fetch
+if (clearCacheBtn) {
+  clearCacheBtn.addEventListener('click', async () => {
+    // 1. Verifier si FiveM est en cours d'execution
+    const isRunning = await window.launcher.checkFiveMRunning();
+    
+    let confirmMessage = "Voulez-vous vraiment vider le cache FiveM ?";
+    // 2. Adapter le message si FiveM est ouvert
+    if (isRunning) {
+      confirmMessage = "FiveM est en cours d'exécution. Voulez-vous le fermer pour pouvoir vider le cache ?";
+    }
+
+    const confirm = await showCustomModal(confirmMessage);
+    if (!confirm) return; // Si le joueur refuse (bouton Annuler), on annule tout simplement
+
+    try {
+      const success = await window.launcher.clearCache();
+      if (success) {
+        await showCustomModal("Cache vidé avec succès !", true);
+      } else {
+        await showCustomModal("Erreur : Fichiers en cours d'utilisation.", true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+}
+
 fetchServerStatus();
-
-// Refresh data every 10 seconds
 setInterval(fetchServerStatus, 10000);

@@ -5,4 +5,6 @@ contextBridge.exposeInMainWorld('launcher', {
   close: () => ipcRenderer.send('close-app'),
   minimize: () => ipcRenderer.send('minimize-app'),
   maximize: () => ipcRenderer.send('maximize-app'),
+  clearCache: () => ipcRenderer.invoke('clear-cache'),
+  checkFiveMRunning: () => ipcRenderer.invoke('check-fivem-running'),
 });

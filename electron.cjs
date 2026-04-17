@@ -1,4 +1,11 @@
 const { app, BrowserWindow, ipcMain, screen } = require('electron');
+
+// --- BRANDING INITIALIZATION ---
+app.setName('DISTINCTION RP');
+if (process.platform === 'win32') {
+  app.setAppUserModelId('distinction.rp.v3');
+}
+
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -56,6 +63,8 @@ function createWindow() {
   const win = new BrowserWindow({
     width: winWidth,
     height: winHeight,
+    title: "DISTINCTION RP",
+    icon: path.join(__dirname, 'logo.png'),
     resizable: true,
     frame: false,
     transparent: true,
@@ -87,6 +96,65 @@ function createWindow() {
       const url = `fivem://connect/${serverAddress}`;
       spawn('explorer.exe', [url], { detached: true, stdio: 'ignore', shell: false }).unref();
     }, 200);
+  });
+
+  ipcMain.handle('check-fivem-running', () => {
+    try {
+      const { execSync } = require('child_process');
+      const stdout = execSync('tasklist /FI "IMAGENAME eq FiveM*" /FO CSV /NH', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+      return stdout.toLowerCase().includes('fivem');
+    } catch (e) {
+      return false;
+    }
+  });
+
+  ipcMain.handle('clear-cache', async () => {
+    try {
+      const { execSync } = require('child_process');
+      
+      // Force la fermeture de FiveM avant de nettoyer
+      try {
+        execSync('taskkill /F /IM FiveM* /T', { stdio: 'ignore' });
+        // Petit délai pour s'assurer que Windows libère les fichiers
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (e) { 
+        // L'erreur signifie simplement que FiveM n'est pas ouvert
+      }
+
+      const localAppData = process.env.LOCALAPPDATA || path.join(process.env.USERPROFILE, 'AppData', 'Local');
+      
+      const targets = [
+        path.join(localAppData, 'FiveM', 'FiveM.app'),
+        path.join(localAppData, 'FiveM', 'FiveM Application Data'),
+        path.join(localAppData, 'FiveM') // Au cas ou c'est a la racine de FiveM
+      ];
+
+      for (const base of targets) {
+        const folders = [
+          path.join(base, 'data', 'cache'),
+          path.join(base, 'data', 'server-cache'),
+          path.join(base, 'data', 'server-cache-priv'),
+          path.join(base, 'crashes'),
+          path.join(base, 'logs')
+        ];
+
+        for (const f of folders) {
+          if (fs.existsSync(f)) {
+            try {
+              // Commande Windows musclée pour tout virer
+              execSync(`rmdir /s /q "${f}"`);
+            } catch (e) {
+              // Si rmdir echoue (fichier lock), on tente la methode Node
+              try { fs.rmSync(f, { recursive: true, force: true }); } catch (e2) {}
+            }
+          }
+        }
+      }
+      return true;
+    } catch (err) {
+      console.error('Erreur finale force brute:', err);
+      return true;
+    }
   });
 }
 

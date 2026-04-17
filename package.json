@@ -1,6 +1,7 @@
 {
-  "name": "fivem-launcher",
-  "version": "0.0.0",
+  "name": "distinction-rp-launcher",
+  "productName": "DISTINCTION RP",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,10 +15,11 @@
     "electron-builder": "^26.8.1",
     "vite": "^8.0.4"
   },
+  "author": "Distinction RP",
   "main": "electron.cjs",
   "build": {
     "appId": "com.distinctionrp.launcher",
-    "productName": "Distinction RP Launcher",
+    "productName": "DISTINCTION RP",
     "directories": {
       "output": "release"
     },
