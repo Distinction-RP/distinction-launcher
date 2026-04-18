@@ -39,7 +39,7 @@
           "x64"
         ]
       },
-      "compression": "maximum",
+      "compression": "normal",
       "forceCodeSigning": false
     }
   }
