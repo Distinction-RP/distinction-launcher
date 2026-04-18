@@ -31,7 +31,7 @@
           "x64"
         ]
       },
-      "compression": "store",
+      "compression": "maximum",
       "forceCodeSigning": false
     }
   }

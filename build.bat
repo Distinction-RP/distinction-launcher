@@ -30,7 +30,7 @@ if not exist "release\win-unpacked" (
     exit /b 1
 )
 
-powershell -Command "Compress-Archive -Path 'release\win-unpacked\*' -DestinationPath 'payload.zip' -Force"
+powershell -Command "Compress-Archive -Path 'release\win-unpacked\*' -DestinationPath 'payload.zip' -CompressionLevel Optimal -Force"
 
 :: 4. Compilation du Loader C# (Version avec DLL references)
 echo [3/3] Compilation du Loader final (EXE)...
