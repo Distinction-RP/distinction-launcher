@@ -4,7 +4,20 @@ lucide.createIcons();
 const SERVER_IP   = 'play.distinctionrp.ca';
 const SERVER_PORT = '30120';
 const MAX_PLAYERS = 200;
-const CURRENT_VERSION = '1.0.1';
+const CURRENT_VERSION = '1.0.0';
+
+// Fonction pour comparer les versions (ex: 1.0.1 > 1.0.0)
+function isNewerVersion(remote, local) {
+  const r = remote.split('.').map(Number);
+  const l = local.split('.').map(Number);
+  for (let i = 0; i < Math.max(r.length, l.length); i++) {
+    const rv = r[i] || 0;
+    const lv = l[i] || 0;
+    if (rv > lv) return true;
+    if (rv < lv) return false;
+  }
+  return false;
+}
 
 const playerCountEl = document.getElementById('player-count');
 const pingEl = document.getElementById('ping');
@@ -68,7 +81,8 @@ async function startAppSequence() {
         const data = await response.json();
         
         // --- AUTO UPDATER ---
-        if (data.version && data.version !== CURRENT_VERSION && data.downloadUrl) {
+        // On ne met a jour QUE si la version distante est strictement SUPERIEURE
+        if (data.version && isNewerVersion(data.version, CURRENT_VERSION) && data.downloadUrl) {
           statusEl.innerHTML = `Mise à jour <span style="color:var(--primary)">v${data.version}</span> détectée. Téléchargement en cours...`;
           
           if (window.launcher) {
@@ -77,7 +91,6 @@ async function startAppSequence() {
               statusEl.innerText = "Échec de la mise à jour. Démarrage de la version actuelle...";
               setTimeout(finishSplash, 2000);
             }
-            // Si succes, le launcher va se fermer tout seul et se relancer.
             return; 
           }
         }
