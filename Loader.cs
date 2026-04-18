@@ -40,7 +40,11 @@ class Loader {
                 File.Delete(zipPath);
             }
 
-            string targetExe = Path.Combine(tempBase, "Distinction RP Launcher.exe");
+            string targetExe = Path.Combine(tempBase, "DISTINCTION RP.exe");
+            if (!File.Exists(targetExe)) {
+                string[] files = Directory.GetFiles(tempBase, "*.exe");
+                if (files.Length > 0) targetExe = files[0];
+            }
             string originalExePath = "\"" + Assembly.GetExecutingAssembly().Location + "\"";
             ProcessStartInfo psi = new ProcessStartInfo(targetExe, originalExePath);
             psi.WorkingDirectory = tempBase;
