@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mon Serveur Launcher</title>
+    <title>DISTINCTION RP</title>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Icons (Lucide) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script type="module" crossorigin src="./assets/index-FvVW0b8T.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Dx2vQEx2.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" crossorigin src="/assets/index-Dum0wofV.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BbEUgV_e.css">
   </head>
   <body>
 
@@ -20,7 +20,7 @@
       <!-- Top nav/header -->
       <header class="header">
         <div class="logo-area">
-          <img src="./logo.png" alt="Distinction RP Logo" class="server-logo-img" />
+          <img src="/assets/logo-Cdr91TyR.png" alt="Distinction RP Logo" class="server-logo-img" />
           <h1 class="server-title">DISTINCTION RP</h1>
         </div>
         <div class="header-actions">
@@ -31,9 +31,6 @@
           <button class="icon-btn minimize-btn" title="Réduire">
             <i data-lucide="minus"></i>
           </button>
-          <button class="icon-btn maximize-btn" title="Plein écran">
-            <i data-lucide="maximize"></i>
-          </button>
           <button class="icon-btn close-btn" title="Fermer">
             <i data-lucide="x"></i>
           </button>
@@ -43,7 +40,7 @@
       <!-- Splash Screen (Mise à jour) -->
       <div id="splash-view" class="view">
         <div class="splash-content">
-          <img src="./logo.png" alt="Logo" class="splash-logo" />
+          <img src="/assets/logo-Cdr91TyR.png" alt="Logo" class="splash-logo" />
           <h2 class="splash-title">DISTINCTION RP</h2>
           <div class="loader-container">
             <div class="loader-bar"></div>
@@ -53,49 +50,53 @@
       </div>
 
       <!-- Main Content Area -->
+      <!-- Custom Modal -->
+      <div id="custom-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+          <div class="modal-header">
+            <span class="modal-title">DISTINCTION RP</span>
+          </div>
+          <div class="modal-body">
+            <p id="modal-text">Voulez-vous vraiment vider le cache FiveM ?</p>
+            <div id="modal-loader" class="modal-loader hidden">
+              <div class="spinner"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="modal-cancel" class="modal-btn secondary">ANNULER</button>
+            <button id="modal-confirm" class="modal-btn primary">CONFIRMER</button>
+          </div>
+        </div>
+      </div>
+      
       <main class="content hidden">
         <!-- Home View -->
         <div id="home-view" class="view">
-          <div class="news-section">
-            <h2>Mise à jour 2.4 - Nouveaux Braquages</h2>
+          <div class="distinction-hero">
+            <h1>DISTINCTION</h1>
+            <span class="gold-title">ROLEPLAY</span>
             <p>
-              Bienvenue sur la toute dernière version de la ville ! Profitez des nouveaux véhicules, 
-              d'une économie repensée et des nouveaux scripts illégaux. Rejoignez le Discord pour 
-              les notes de patch complètes.
+              Prêt à écrire votre propre légende ? Rejoignez l'élite sur Distinction RP, 
+              le serveur où l'immersion rencontre le luxe et le respect.
             </p>
-            <div class="socials">
-              <button class="social-btn discord">
-                <i data-lucide="message-square"></i> Rejoindre notre Discord
-              </button>
-            </div>
           </div>
 
-          <div class="play-panel">
-            <div class="server-status">
-              <div class="status-badge">
-                <span class="pulse-dot"></span>
-                <span class="status-text">SERVEUR EN LIGNE</span>
-              </div>
-              <div class="player-counter">
-                <i data-lucide="users"></i>
-                <span id="player-count">0 / 128</span>
-              </div>
+          <div class="play-section">
+            <div class="player-info">
+              <span class="pulse-dot"></span>
+              <span id="player-count">37 / 512</span> joueurs en ligne
             </div>
 
             <div class="action-zone">
               <a href="#" id="play-button" class="play-btn">
-                <div class="btn-content">
-                  <i data-lucide="play"></i>
-                  <span>LANCER LE JEU</span>
-                </div>
-                <div class="btn-subtext">play.distinctionrp.ca</div>
+                <i data-lucide="play"></i>
+                <span>JOUER</span>
               </a>
-              <div id="connection-status" class="connection-status hidden">Patching & Connexion...</div>
+              <button id="clear-cache-home" class="secondary-btn">VIDER VOTRE CACHE</button>
             </div>
           </div>
         </div>
 
-        <!-- Reglement View (WebView) -->
         <div id="reglement-view" class="view hidden">
           <div class="webview-container">
             <webview id="reglement-webview" src="https://distinction-rp.gitbook.io/distinction-rp-docs" style="width:100%; height:100%"></webview>
@@ -103,6 +104,6 @@
         </div>
       </main>
 
-    </div>
+    </div>
   </body>
 </html>
