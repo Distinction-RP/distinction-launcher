@@ -165,16 +165,53 @@ function createWindow() {
     try {
       // Trouver le chemin de l'executable d'origine (sur le bureau) via les arguments du Loader C#
       const originExe = process.argv.length > 1 ? process.argv[process.argv.length - 1] : '';
-      if (!originExe.toLowerCase().endsWith('.exe')) return false;
+      if (!originExe || !originExe.toLowerCase().endsWith('.exe')) {
+        console.error("Chemin d'origine invalide:", originExe);
+        return false;
+      }
 
       // Telecharger la nouvelle version
       const response = await fetch(downloadUrl);
-      if (!response.ok) return false;
+      if (!response.ok) {
+        console.error(`Erreur HTTP: ${response.status}`);
+        return false;
+      }
       
       const buffer = await response.arrayBuffer();
-      
-      // Ecraser l'ancien fichier sur le bureau (possible car le loader C# est deja ferme)
-      fs.writeFileSync(originExe, Buffer.from(buffer));
+      const nodeBuffer = Buffer.from(buffer);
+
+      // --- VALIDATION CRITIQUE ---
+      // 1. Verifier la taille minimale (un launcher fait rarement moins de 5 Mo)
+      if (nodeBuffer.length < 1024 * 1024) { // 1 Mo min
+        console.error("Fichier téléchargé trop petit, probablement invalide:", nodeBuffer.length, "octets");
+        return false;
+      }
+
+      // 2. Verifier l'en-tête MZ (Windows Executable)
+      if (nodeBuffer[0] !== 0x4D || nodeBuffer[1] !== 0x5A) {
+        console.error("Le fichier téléchargé n'est pas un exécutable Windows valide (Header MZ manquant)");
+        return false;
+      }
+
+      // 3. Verifier si c'est de l'HTML (souvent le cas si on se trompe de lien GitHub)
+      if (nodeBuffer.toString('utf8', 0, 100).toLowerCase().includes('<!doctype html') || 
+          nodeBuffer.toString('utf8', 0, 100).toLowerCase().includes('<html')) {
+        console.error("Le lien de téléchargement pointe vers une page HTML et non le fichier direct.");
+        return false;
+      }
+
+      // Ecraser l'ancien fichier sur le bureau
+      // On utilise un try/catch specifique pour l'ecriture
+      try {
+        const tempPath = originExe + '.tmp';
+        fs.writeFileSync(tempPath, nodeBuffer);
+        
+        // Si l'ecriture du temp a reussi, on renomme (plus robuste)
+        fs.renameSync(tempPath, originExe);
+      } catch (writeErr) {
+        console.error("Erreur lors de l'écriture du fichier:", writeErr);
+        return false;
+      }
       
       // Relancer silencieusement
       spawn(originExe, [], { detached: true, stdio: 'ignore' }).unref();
