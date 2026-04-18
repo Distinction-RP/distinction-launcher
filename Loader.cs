@@ -21,10 +21,16 @@ class Loader {
     static void Main() {
         try {
             // Utiliser un nouveau nom pour forcer Windows a oublier le cache (Icone + Nom)
-            string tempBase = Path.Combine(Path.GetTempPath(), "DistinctionRP_Release");
-            if (Directory.Exists(tempBase)) {
-                try { Directory.Delete(tempBase, true); } catch {}
-            }
+            // Nettoyer les anciens dossiers temporaires s'ils ne sont plus utilises
+            try {
+                foreach (string dir in Directory.GetDirectories(Path.GetTempPath(), "DistinctionRP_*")) {
+                    try { Directory.Delete(dir, true); } catch { }
+                }
+            } catch { }
+
+            // Utiliser un nom unique pour eviter les conflits
+            string uid = Guid.NewGuid().ToString("N").Substring(0, 8);
+            string tempBase = Path.Combine(Path.GetTempPath(), "DistinctionRP_" + uid);
             Directory.CreateDirectory(tempBase);
 
             // Load ZIP from resources
