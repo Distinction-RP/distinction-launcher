@@ -23,6 +23,14 @@
     "directories": {
       "output": "release"
     },
+    "files": [
+      "dist/**/*",
+      "electron.cjs",
+      "preload.cjs",
+      "package.json",
+      "logo.png",
+      "version.json"
+    ],
     "win": {
       "icon": "app.ico",
       "target": {
